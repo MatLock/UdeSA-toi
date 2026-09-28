@@ -3,6 +3,7 @@
 > **Equipo:** Deep Tagger
 > **Integrantes:** Jorge Federico Flores, Hernán Marano, Nicolás Velázquez
 > **Caso:** Carga y control de fichas de producto para e-commerce de moda (lado empresa, no consumidor final)
+> **Proyecto que extendemos:** [MatLock/UdeSA-computer-vision](https://github.com/MatLock/UdeSA-computer-vision). Cuando este documento dice "el repo" o "el prototipo", se refiere a ese proyecto.
 > **Versión:** 1 · **Fecha:** 2026-09-28
 
 Convención de este documento: lo marcado como *(H)* es hipótesis nuestra, todavía sin verificar. Lo que no tiene marca tiene una fuente al final. Si algo dice "no sabemos", es que no sabemos.
@@ -94,7 +95,7 @@ Reconocimiento del problema (los tres escalones de la consigna): *(H)* creemos q
 
 Una herramienta para equipos de e-commerce de moda. Se suben las fotos de una prenda y devuelve la ficha lista para revisar: tipo de prenda, color, material probable, temporada, ocasión, título y descripción. Cada campo indica qué tan seguro está, y los dudosos quedan marcados para revisión. También se le puede pasar una publicación ya cargada y avisa cuando algún dato de la ficha no coincide con la foto. La salida se adapta al formato que pide cada plataforma.
 
-Lo que ya existe en el repo: subir una URL de imagen y recibir tipo de prenda, colores dominantes, algunos atributos (material, ocasión, temporada) para tops, calzado y pantalones, título y descripción.
+Lo que ya existe en el repo ([UdeSA-computer-vision](https://github.com/MatLock/UdeSA-computer-vision)): subir una URL de imagen y recibir tipo de prenda, colores dominantes, algunos atributos (material, ocasión, temporada) para tops, calzado y pantalones, título y descripción.
 
 Lo que proponemos sumar:
 
@@ -311,3 +312,4 @@ Todas son fuentes secundarias (prensa y blogs). Hay que reemplazarlas por los in
 | Fecha | Sección | Qué cambió | Qué lo motivó |
 |---|---|---|---|
 | 2026-09-28 | Todas | Primera versión | Clase 02, README del repo, búsqueda de proxies de devoluciones y e-commerce |
+| 2026-09-28 | Encabezado y sección 3 | Referencia al repo que extendemos (MatLock/UdeSA-computer-vision) | Dejar explícito a qué proyecto se refiere "el repo" |
