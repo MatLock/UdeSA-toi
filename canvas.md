@@ -191,7 +191,17 @@ Enfoque: aprendizaje supervisado. La respuesta correcta es la ficha que un human
 | Dato | Origen | ¿Público? | ¿Lo vimos? | ¿Sensibles? | Sesgo conocido | Comentarios |
 |---|---|---|---|---|---|---|
 | Fashion-MNIST (70k imágenes, 10 clases) | Zalando Research | Sí | Sí, entrenamos con él | No | Imágenes de 28×28 en gris, sobre fondo limpio, pocas clases; no se parece a una foto de catálogo real | Entrena el clasificador de tipo de prenda |
-| CSV con imágenes etiquetadas (tops, pantalones y otros) que baja `img-puller` | *Completar*: quién etiquetó y de dónde vienen las imágenes | *Completar* | Sí | *Completar* | *Completar* | Entrena los atributos (material, ocasión, temporada). Hay inconsistencia a revisar: `img-puller` nombra "dresses" y la API tiene modelos para "tops, shoes, pants" |
+| CSV con imágenes etiquetadas (tops, pantalones y otros) que baja `img-puller`: unas 50.000 imágenes con algunos tags y tipo de producto, **sin título ni descripción** | no: quién etiquetó y de dónde vienen las imágenes | clientes productivos con autorizacion | Sí | No | No | Entrena los atributos (material, ocasión, temporada). Hay inconsistencia a revisar: `img-puller` nombra "dresses" y la API tiene modelos para "tops, shoes, pants". *(H)* Ver si sale de Fashion Product Images (fila de abajo): el tamaño y los atributos se parecen, y ese dataset sí trae título |
+| Fashion Product Images: unos 44.000 productos con `gender`, `masterCategory`, `subCategory`, `articleType`, `baseColour`, `season`, `usage` y `productDisplayName` (título) | Kaggle (paramaggarwal), catálogo de Myntra. Hay una versión chica en Hugging Face (`ashraq/fashion-product-images-small`) | Sí. Licencia: verificar en Kaggle | No | Fotos con modelo | Retail de India. Títulos cortos con marca ("Turtle Check Men Navy Blue Shirt"), sin descripción larga | Trae título real, temporada y ocasión (`usage`), lo mismo que predice el prototipo |
+| H&M: unos 105.000 artículos con `prod_name`, `detail_desc` (descripción), tipo, color e imagen | Competencia de Kaggle "H&M Personalized Fashion Recommendations". En Hugging Face: `Qdrant/hm_ecommerce_products` (completo) y `wbensvage/clothes_desc` (1.000 pares imagen + texto) | Sí, bajo las reglas de la competencia | No | Fotos con modelo. Las transacciones y clientes no los necesitamos | Una sola marca, fast fashion europea, en inglés y con el estilo de redacción de H&M | Es lo más parecido a "foto + ficha escrita por la marca". El espejo de Qdrant dice CC BY 4.0, pero no puede cambiar la licencia de datos que no son suyos: leer las reglas de la competencia |
+| Amazon Reviews 2023, categoría Clothing, Shoes & Jewelry: 7,2 millones de ítems con `title`, `description`, `features`, `details` (incluye material) e `images` | McAuley Lab (UCSD), Hugging Face `McAuley-Lab/Amazon-Reviews-2023` | Sí, pensado para investigación. La página no publica licencia | No | Los metadatos no; las reseñas tienen ids de usuario y no las usaríamos | EE. UU., en inglés. Textos escritos por vendedores, de calidad muy despareja y con mucho marketing | Volumen enorme. Hay que filtrar un subconjunto limpio. Es de las pocas fuentes que trae material declarado |
+| Fashion-Gen: unas 293.000 imágenes de 1360×1360 con descripción escrita por estilistas; 48 categorías y 121 subcategorías | Element AI y SSENSE (paper de 2018) | Bajo pedido. Licencia no verificada | No | Algunas con modelo | Lujo, fondo uniforme, en inglés | Las descripciones son las más parecidas a una ficha de catálogo. Hay que ver si todavía se puede pedir |
+| DeepFashion-MultiModal: 44.096 imágenes con atributos manuales de forma, tela (7 clases) y color/estampa (7 clases), más una descripción por imagen | CUHK MMLab | Sí, **solo investigación no comercial** | No | Sí: fotos de personas de cuerpo entero | Todas con modelo, sin fondo de catálogo. Las descripciones salen de plantillas | Sirve para tela y estampa con anotación manual, y para medir cómo anda el prototipo con fotos con modelo. No se puede usar en un producto comercial |
+| Fashionpedia: 48.825 imágenes, 27 categorías, 294 atributos finos (cuello, manga, largo, estampa) con máscaras | Google, Cornell y CVDF | Anotaciones CC BY 4.0. Las imágenes tienen la licencia de cada origen (Flickr, Unsplash, Pexels, etc.) | No | Sí: personas en la calle y en eventos | Fotos de la vida real, no de catálogo | Fuente de los atributos que queremos sumar (sección 3, punto 4). No trae títulos ni descripciones |
+| Fashion200k: unas 200.000 imágenes con descripción corta y tres niveles de categoría | Han et al. (2017). Espejo en Hugging Face `Marqo/fashion200k` | Sí (el espejo dice Apache 2.0; las imágenes vienen de tiendas online) | No | Algunas con modelo | Retail de EE. UU. | Las descripciones son listas de atributos ("blue denim skinny jeans"): sirven más para títulos que para descripciones |
+| Títulos de publicaciones de Mercado Libre en español y portugués, con categoría | MeLi Data Challenge 2019 (competencia pública de Mercado Libre; también en Kaggle) | Sí. Términos a revisar | No | No | Todos los rubros (hay que filtrar indumentaria) y categorías de Mercado Libre. No trae imágenes | La única fuente orgánica en español que encontramos. Muestra cómo se titula en la región ("remera", "buzo", "campera") |
+| Títulos y descripciones **sintéticos** para las ~50.000 imágenes del repo | Generados por nosotros con un modelo multimodal, a partir de la imagen y los tags que ya tiene | Propio | No existe todavía | No, mientras no usemos fotos de clientes | Hereda los errores y el estilo del modelo que los genera. Tiende a descripciones parecidas entre sí | Ver "Datos orgánicos y sintéticos" abajo |
+| Fichas con errores **inyectados** (color, tipo o material cambiados a propósito) | Generadas por nosotros a partir de fichas reales | Propio | No existe todavía | No | El error es artificial: puede no parecerse a los errores que comete una persona | Entrena y evalúa el control de coherencia foto vs. ficha |
 | Imágenes de productos de marketplace (el ejemplo del README usa una URL de mlstatic.com) | Mercado Libre, si ese es el origen | Visible en la web, pero eso no es lo mismo que libre de usar | Parcialmente | Fotos con modelos = imagen de personas | Marcas grandes y fotos profesionales | Revisar términos de uso antes de seguir usándolas para entrenar |
 | Pares foto + ficha cargados por humanos en marcas argentinas | Clientes o marcas piloto | No | **No** | Rostros de modelos | Depende de cada marca | Es el dato del que más depende el proyecto |
 | Correcciones de quien revisa (campo, valor sugerido, valor final) | Uso de la herramienta | No | **No existe todavía** | No | — | Hay que empezar a registrarlo desde el primer uso |
@@ -204,17 +214,48 @@ Extrapolable entre clientes: parcialmente. Los conceptos (color, tipo) sí, pero
 
 Datos personales: los rostros de modelos son datos personales (Ley 25.326). Además, mandar las imágenes de un cliente a un servicio externo para generar la descripción requiere que el cliente lo sepa y lo acepte. Hay que definirlo antes de un piloto.
 
+### Datos orgánicos y sintéticos
+
+El hueco concreto: las ~50.000 imágenes del repo tienen tipo de producto y algunos tags, pero no tienen título ni descripción. Sin texto escrito para esas fotos no podemos entrenar ni medir la parte que genera la ficha. Proponemos usar los dos tipos de dato, cada uno para una cosa distinta:
+
+- **Orgánicos** (escritos por personas: H&M, Fashion Product Images, Amazon, Fashion-Gen, Mercado Libre y, más adelante, las marcas piloto). Sirven para entrenar donde alcanzan y, sobre todo, para **evaluar**. El set de evaluación es 100% orgánico. Nunca medimos contra texto sintético.
+- **Sintéticos** (generados por nosotros). Sirven para dos cosas: (1) completar título y descripción de las ~50.000 imágenes, en español rioplatense, que es lo que no existe en ningún dataset público con imagen; (2) armar fichas con errores inyectados para el control de coherencia.
+
+Cómo armaríamos los títulos y descripciones sintéticos *(H, sin probar)*:
+
+1. Un modelo multimodal recibe la imagen y los tags que ya tiene, y escribe título y descripción. Los tags van como restricción: el texto no puede contradecir el tipo ni el color conocidos.
+2. Un filtro automático descarta los textos que contradicen los tags o que mencionan material cuando el tag no lo trae. El material casi nunca se ve en la foto (sección 3), y un texto sintético que lo inventa enseña a inventarlo.
+3. Una persona del equipo revisa una muestra (*H: unas 300*) y anota cuántos tienen errores. Esa tasa se reporta junto con cualquier resultado que use el dato sintético.
+4. Entrenamos con sintético y orgánico mezclados, y medimos solo sobre orgánico.
+
+Lo que hay que tener presente con lo sintético:
+
+- **Circularidad con la sección 3.** Si el texto de entrenamiento lo escribe un modelo generalista, el nuestro como mucho lo imita. La comparación "nuestro pipeline vs. un modelo generalista" queda sesgada a favor del generalista en calidad de texto. Lo que el modelo propio podría aportar es costo, velocidad, vocabulario local y el control de coherencia, y hay que medirlo en esos términos.
+- Los modelos multimodales inventan atributos finos (fuente 12). El dato sintético va a tener errores, y por eso se mide su tasa.
+- Homogeneización: si todas las descripciones salen del mismo generador, todas suenan igual (sección 7, riesgo social).
+- Términos de uso del generador: algunos proveedores restringen usar sus salidas para entrenar otros modelos. Revisarlo antes de generar.
+- Idioma: casi todo lo orgánico con imagen está en inglés. El español rioplatense sale de traducción o generación, o sea, también es sintético. Los títulos de Mercado Libre son la única referencia orgánica en español, y no traen imagen.
+
+Licencias: varios de estos datasets son solo para investigación no comercial (DeepFashion-MultiModal seguro; H&M, Amazon y Fashion-Gen sin confirmar). Para la PoC de la materia alcanza. Para un producto no alcanza, y el dato del que más depende el proyecto sigue siendo el mismo: fichas reales de marcas argentinas.
+
 ### Evidencia
 
 #### De confirmación
 
 - Abrimos y usamos Fashion-MNIST y los CSV etiquetados del repo. Sabemos que tienen las columnas necesarias para los tres tipos con modelo de atributos.
+- Existen datasets públicos de moda con pares imagen + texto escrito por personas: H&M, Fashion Product Images, Amazon Reviews 2023, Fashion-Gen, DeepFashion-MultiModal y Fashion200k (fuentes 6 a 11). Leímos las fichas de cada uno en Hugging Face, GitHub o el paper, pero **no abrimos ninguno todavía**. Por eso en la tabla dicen "No".
+- Generar texto sintético a partir de imágenes de moda es una práctica publicada (fuente 12), así que lo que proponemos es posible.
 
 #### De refutación
 
 - Fashion-MNIST no representa fotos reales de catálogo. Es probable que el clasificador de tipo rinda peor con fotos con modelo, fondos complejos o prendas fuera de esas 10 clases. Todavía no lo medimos con fotos reales.
 - El cálculo de color descarta píxeles blancos y agrupa en 2 colores. Con una modelo puesta la prenda, la piel, el pelo y el fondo se van a colar. Falta probarlo.
 - No conocemos el origen de los CSV etiquetados, y eso puede invalidar el uso.
+- No encontramos ningún dataset público con imagen + ficha en español, ni de marcas argentinas. Todo lo orgánico con imagen es de EE. UU., Europa o India.
+- La misma literatura que genera descripciones sintéticas dice que los modelos multimodales sin ajuste inventan o confunden atributos finos (fuente 12). Si la tasa de error del sintético resulta alta, no sirve para entrenar.
+- Las licencias de H&M, Amazon y Fashion-Gen no están confirmadas. Si alguna prohíbe el uso fuera de su competencia o fuera de investigación, sale de la tabla.
+
+Próximo paso concreto: bajar `articles.csv` de H&M y `styles.csv` de Fashion Product Images, contar cuántas filas tienen título y descripción no vacíos, y ver si las ~50.000 imágenes del repo coinciden con las de Fashion Product Images (si coinciden, ya tienen título orgánico).
 
 ---
 
@@ -305,6 +346,16 @@ Regulación: no toca las categorías críticas de la lista (empleo, crédito, bi
 
 Todas son fuentes secundarias (prensa y blogs). Hay que reemplazarlas por los informes originales antes de la entrega final.
 
+### Datasets (consultados el 2026-10-06)
+
+6. H&M Personalized Fashion Recommendations (Kaggle). https://www.kaggle.com/competitions/h-and-m-personalized-fashion-recommendations · Espejos: https://huggingface.co/datasets/Qdrant/hm_ecommerce_products y https://huggingface.co/datasets/wbensvage/clothes_desc
+7. Fashion Product Images (Kaggle). https://www.kaggle.com/datasets/paramaggarwal/fashion-product-images-dataset · Versión chica: https://huggingface.co/datasets/ashraq/fashion-product-images-small
+8. Amazon Reviews 2023 (McAuley Lab). https://amazon-reviews-2023.github.io/ · https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023
+9. Rostamzadeh et al., "Fashion-Gen: The Generative Fashion Dataset and Challenge" (2018). https://arxiv.org/abs/1806.08317
+10. DeepFashion-MultiModal. https://github.com/yumingj/DeepFashion-MultiModal
+11. Fashionpedia: https://github.com/cvdfoundation/fashionpedia · Fashion200k: https://huggingface.co/datasets/Marqo/fashion200k · MeLi Data Challenge 2019: https://www.kaggle.com/datasets/fredericods/mercado-libre-data-challenge
+12. "RA-CoA: Training-free Fashion Image Captioning via Retrieval-Augmented Chain-of-Attributes". https://arxiv.org/html/2609.14100
+
 ---
 
 ## Bitácora de revisiones
@@ -313,3 +364,4 @@ Todas son fuentes secundarias (prensa y blogs). Hay que reemplazarlas por los in
 |---|---|---|---|
 | 2026-09-28 | Todas | Primera versión | Clase 02, README del repo, búsqueda de proxies de devoluciones y e-commerce |
 | 2026-09-28 | Encabezado y sección 3 | Referencia al repo que extendemos (MatLock/UdeSA-computer-vision) | Dejar explícito a qué proyecto se refiere "el repo" |
+| 2026-10-06 | Sección 5 | Datasets públicos candidatos, estrategia de datos orgánicos y sintéticos, nueva evidencia y fuentes 6 a 12 | Las ~50.000 imágenes del repo no tienen título ni descripción; búsqueda en Hugging Face, Kaggle y papers |
